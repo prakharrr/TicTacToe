@@ -11,23 +11,29 @@ class TicTacToe(object):
         when play gets called, user 1 or user 2 depending on their usage will get marked
         Player 1 uses X while Player 2 uses O
         """
-        # self.pprint_board()
-
-        if self.iswin(user):
-            return(f"Player {user} won")
-
+        over = False
         if user==1:
             if self.isValid(i, j):
                 self._board[i][j] = 'X'
+                if self.iswin(user):
+                    print(f"\n\n******* Player {user} won *******\n\n")
+                    over = True
+                    return over
+                self.pprint_board()
             else:
                 return 'Marker already placed or the location does not exist'
         elif user==2:
             if self.isValid(i,j):
                 self._board[i][j] = 'O'
+                if self.iswin(user):
+                    print(f"Player {user} won")
+                    over=True
+                    return over
+                self.pprint_board()
             else:
                 return 'Marker already placed or the location does not exist'
-        print('Board is Updated:')
-        # self.pprint_board()
+        print('\n**Board Updated**\n')
+        return over
 
     
     def isValid(self, i, j):
@@ -36,7 +42,6 @@ class TicTacToe(object):
         1. The move could already been played
         2. The board moves are exhausted
         """
-
         if self._board[i][j] == '.':
             return True
         return False
@@ -52,13 +57,10 @@ class TicTacToe(object):
                     isWinner=True
                     return isWinner
             for j in range(len(self._board)):
-                
                 vertical_check.append(self._board[j][i])
-
             if self.win(vertical_check):
                 isWinner=True
                 return isWinner
-        return isWinner
 
         #checking diagonals
         leading_diagonal = [self._board[i][i] for i in range(len(self._board))]
@@ -66,11 +68,10 @@ class TicTacToe(object):
         if self.win(leading_diagonal) or self.win(cross_diagonal):
             isWinner=True
             return isWinner
-
         return isWinner
 
     def win(self, win_list):
-        if len(win_list)==3 and len(set(win_list))==1:
+        if '.' not in win_list and len(win_list)==3 and len(set(win_list))==1:
             return True
         return False
 
@@ -78,20 +79,21 @@ class TicTacToe(object):
         print('Board is now: \n')
         print(*(' | '.join(row) for row in self._board), sep='\n')
 
-import time
+
 if __name__ == "__main__":
     board = TicTacToe()
     print("*** Game starting: Player 1 is X and Player 2 is O   ***")
     print("*** Player 1 goes first ***")
-    # board.pprint_board()
     game,counter = False,0
     while not game:
         print("*** Player 1: Enter x,y coordinates ***\n")
-        print('\n\n')
+
         x,y = input().split()
-        board.play(int(x),int(y), 1)
-        board.pprint_board()
+        game_ret = board.play(int(x),int(y), 1)
+        if game_ret:
+            break
         print("*** Player 2 is placing O now ***\n")
         a,b = input().split()
-        board.play(int(a),int(b), 2)
-
+        game_r=board.play(int(a),int(b), 2)
+        if game_r:
+            break
